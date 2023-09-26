@@ -1,0 +1,6 @@
+
+
+# Reading in data
+# betas_ibd.csv was extracted from a file called rgSet.csv obtained from the IBD ML project folder on OneDrive
+# The data was extracted using the the R script "extract_betas_for_clocks.R" which is stored at:
+# C:\Users\User\Desktop\D Drive\ibd\epi_clock_analysis\r_scripts
