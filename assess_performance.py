@@ -5,7 +5,7 @@ Desc: This script calculates metrics and performance scores.
       
 """
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 from sklearn.metrics import confusion_matrix, accuracy_score, auc, roc_curve
