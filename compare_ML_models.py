@@ -98,7 +98,7 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
         cv_outer = KFold(n_splits=5, shuffle=True, random_state=1)
         for train_ix, test_ix in cv_outer.split(X):
             # split data
-            X_train, X_test = X.iloc[:, 0:500].iloc[train_ix, :], X.iloc[:, 0:500].iloc[test_ix, :]  # X.iloc[:, 0:500]
+            X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]  # X.iloc[:, 0:500]
             y_train, y_test = y[train_ix], y[test_ix]
             
             if algo == 'XGB':
