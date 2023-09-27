@@ -23,7 +23,8 @@ def get_and_record_scores(outer_predictions, results):
     sens = cm[1][1] / (cm[1][1] + cm[1][0])
     spec = cm[0][0] / (cm[0][0] + cm[0][1])
     prec = cm[1][1] / (cm[1][1] + cm[0][1])
-    print(f'Sens: {sens:.3f}, Spec: {spec:.3f}, Prec: {prec:.3f}, Acc: {acc:.3f}, AUC: {auc_score:.3f}')
+    #print(f'Sens: {sens:.3f}, Spec: {spec:.3f}, Prec: {prec:.3f}, Acc: {acc:.3f}, AUC: {auc_score:.3f}')
+    print('Sens: {}, Spec: {}, Prec: {}, Acc: {}, AUC: {}'.format(sens, spec, prec, acc, auc))
     results['auc'].append(auc_score); results['sens'].append(sens); results['spec'].append(spec);
     results['prec'].append(prec); results['acc'].append(acc); results['All test'].append(all_test)
     results['All pred'].append(all_pred); results['All probas'].append(all_probas)

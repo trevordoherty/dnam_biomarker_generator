@@ -12,11 +12,11 @@ def return_parameter_space(algo):
     """Return parameter space for each algo."""
 
     space = dict()
-    if algo == 'LR - no reg':
+    if algo == 'LR_no_reg':
         space['solver'] = hp.choice('solver', ['lbfgs']) 
         space['penalty'] = hp.choice('penalty', ['none'])
         #space['C'] = hp.loguniform('C', np.log(0.00001), np.log(100))
-    elif algo == 'LR - reg':
+    elif algo == 'LR_reg':
         space['solver'] = hp.choice('solver', ['liblinear']) 
         space['penalty'] = hp.choice('penalty', ['l1', 'l2']) 
         space['C'] = hp.loguniform('C', np.log(0.00001), np.log(100))
@@ -29,14 +29,14 @@ def return_parameter_space(algo):
     elif algo == 'RF':
         #space['n_estimators'] = hp.quniform('n_estimators', range(50, 501, 10))  # Number of trees in the forest
         space['n_estimators'] = hp.choice('n_estimators', [50, 100, 200, 300, 400, 500])
-        #space['max_depth']: hp.quniform('max_depth', 2, 20, 1)           # Maximum depth of each tree
-        space['max_depth']: hp.choice('max_depth', [2, 4, 6, 8, 10, 12, 14, 16, 18, 20])
-        space['min_samples_split']: hp.uniform('min_samples_split', 0.1, 1.0)  # Minimum samples required to split an internal node
-        space['min_samples_split']: hp.choice('min_samples_split', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-        space['min_samples_leaf']: hp.uniform('min_samples_leaf', 0.1, 0.5)    # Minimum samples required to be at a leaf node
-        space['min_samples_leaf']: hp.choice('min_samples_leaf', [0.1, 0.2, 0.3, 0.4, 0.5])
-        space['max_features']: hp.choice('max_features', ['auto', 'sqrt', 'log2', None])  # Number of features to consider when looking for the best split
-        space['bootstrap']: hp.choice('bootstrap', [True, False]) 
+        #space['max_depth'] = hp.quniform('max_depth', 2, 20, 1)           # Maximum depth of each tree
+        space['max_depth'] = hp.choice('max_depth', [2, 4, 6, 8, 10, 12, 14, 16, 18, 20])
+        space['min_samples_split'] = hp.uniform('min_samples_split', 0.1, 1.0)  # Minimum samples required to split an internal node
+        space['min_samples_split'] = hp.choice('min_samples_split', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+        space['min_samples_leaf'] = hp.uniform('min_samples_leaf', 0.1, 0.5)    # Minimum samples required to be at a leaf node
+        space['min_samples_leaf'] = hp.choice('min_samples_leaf', [0.1, 0.2, 0.3, 0.4, 0.5])
+        space['max_features'] = hp.choice('max_features', ['auto', 'sqrt', 'log2', None])  # Number of features to consider when looking for the best split
+        space['bootstrap'] = hp.choice('bootstrap', [True, False]) 
     elif algo == 'XGB':
         #space['learning_rate'] = hp.loguniform('learning_rate', -5, 0),
         #space['max_depth'] = hp.quniform('max_depth', 3, 10, 1),

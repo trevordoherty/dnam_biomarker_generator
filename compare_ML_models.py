@@ -32,7 +32,7 @@ import time
 from xgboost import XGBClassifier
 import warnings
 hyperopt_rstate = np.random.RandomState(42)
-
+warnings.filterwarnings("ignore")
 
 
 def choose_ML_algorithm(input_data, results_path, ml_algo_list):
@@ -84,8 +84,8 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
         return -roc_auc
 
     
-    best_algo = {'LR - no reg': [], 'LR - reg': [], 'SVM': [], 'RF': [], 'XGB': [], 'NB': []}
-    obj_fns = {'LR - reg': objective_lr, 'LR - no reg': objective_lr, 'SVM': objective_svm,
+    best_algo = {'LR_no_reg': [], 'LR_reg': [], 'SVM': [], 'RF': [], 'XGB': [], 'NB': []}
+    obj_fns = {'LR_reg': objective_lr, 'LR_no_reg': objective_lr, 'SVM': objective_svm,
                'RF': objective_rf, 'XGB': objective_xgb, 'NB': objective_nb}
     for algo in ml_algo_list:
         start = time.time()
@@ -103,9 +103,9 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
             
             if algo == 'XGB':
                 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
-                warnings.filterwarnings("ignore")
                 
-            if algo in ['LR - reg', 'LR - no reg', 'SVM', 'NB']: # Not scaled for RF or XGB
+                
+            if algo in ['LR_reg', 'LR_no_reg', 'SVM', 'NB']: # Not scaled for RF or XGB
                 # Scaling
                 sc = StandardScaler()
                 X_train = sc.fit_transform(X_train)
@@ -118,7 +118,7 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
 
             # Retrieve the best parameters
             best_params = space_eval(space, best)
-            if algo in ['LR - reg', 'LR - no reg']:
+            if algo in ['LR_reg', 'LR_no_reg']:
                 best_model = LogisticRegression(random_state=42, **best_params) # tree_method='hist', 
             elif algo == 'SVM':
             	best_model = SVC(random_state=42, probability=True, **best_params)
