@@ -35,7 +35,7 @@ def return_parameter_space(algo):
         space['min_samples_split'] = hp.choice('min_samples_split', [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
         space['min_samples_leaf'] = hp.uniform('min_samples_leaf', 0.1, 0.5)    # Minimum samples required to be at a leaf node
         space['min_samples_leaf'] = hp.choice('min_samples_leaf', [0.1, 0.2, 0.3, 0.4, 0.5])
-        space['max_features'] = hp.choice('max_features', ['auto', 'sqrt', 'log2', None])  # Number of features to consider when looking for the best split
+        space['max_features'] = hp.choice('max_features', ['sqrt', 'log2', None])  # Number of features to consider when looking for the best split
         space['bootstrap'] = hp.choice('bootstrap', [True, False]) 
     elif algo == 'XGB':
         #space['learning_rate'] = hp.loguniform('learning_rate', -5, 0),
