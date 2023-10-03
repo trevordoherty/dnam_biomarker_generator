@@ -43,10 +43,22 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
     """
     
     def objective_lr(params):
+<<<<<<< HEAD
         model = LogisticRegression(random_state=42, max_iter=100, **params) # max_iter=5000
+=======
+        model = LogisticRegression(random_state=42, max_iter=100, n_jobs=-1, **params) #, max_iter=5000
+>>>>>>> 823582e252cfb2a1715304f09cbfcca64ca7f554
         model.fit(X_train, y_train)
         y_probas = model.predict_proba(X_test)[:, 1]
         roc_auc = roc_auc_score(y_test, y_probas)
+        return -roc_auc
+
+    
+    def objective_lr2(params):
+        model = LogisticRegression(random_state=42, max_iter=100, n_jobs=-1, **params) #, max_iter=5000
+        model.fit(X_train, y_train)
+        y_probas = model.predict_proba(X_test)
+        roc_auc = roc_auc_score(y_test, y_probas, multi_class= 'ovr', average='micro')
         return -roc_auc
 
 
@@ -85,15 +97,19 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
 
     
     best_algo = {'LR_no_reg': [], 'LR_reg': [], 'SVM': [], 'RF': [], 'XGB': [], 'NB': []}
-    obj_fns = {'LR_reg': objective_lr, 'LR_no_reg': objective_lr, 'SVM': objective_svm,
+    obj_fns = {'LR_reg_binary': objective_lr, 'LR_reg_multinomial': objective_lr2, 'LR_no_reg': objective_lr, 'SVM': objective_svm,
                'RF': objective_rf, 'XGB': objective_xgb, 'NB': objective_nb}
     for algo in ml_algo_list:
         start = time.time()
-        results = {'auc': [], 'acc': [], 'sens': [], 'spec': [], 'prec': [],
-                   'All test':[], 'All pred': [], 'All probas': []}
+        #X = input_data.iloc[:, :-1]; y =input_data.iloc[:, -1]
+        y = input_data['Label']; X = input_data.drop(columns=['Label'])
+        # Set label cardinality key
+        if len(set(y)) == 2:
+            cardinality = 'binary'
+        elif len(set(y)) > 2:
+            cardinality = 'multinomial'
         outer_predictions = {'Fold predictions': [], 'Fold probabilities': [], 'Fold test': []}
 
-        X = input_data.iloc[:, :-1]; y =input_data.iloc[:, -1]
         # configure the cross-validation procedure
         cv_outer = KFold(n_splits=5, shuffle=True, random_state=1)
         for train_ix, test_ix in cv_outer.split(X):
@@ -104,22 +120,21 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
             if algo == 'XGB':
                 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
                 
-                
             if algo in ['LR_reg', 'LR_no_reg', 'SVM', 'NB']: # Not scaled for RF or XGB
                 # Scaling
                 sc = StandardScaler()
                 X_train = sc.fit_transform(X_train)
                 X_test = sc.transform(X_test)
 		    
-            space = return_parameter_space(algo)
+            space = return_parameter_space(algo, cardinality)
             trials = Trials()
-
-            best = fmin(fn=obj_fns[algo], space=space, algo=tpe.suggest, max_evals=100, trials=trials, rstate=hyperopt_rstate) 
-
+            best = fmin(fn=obj_fns[algo + '_' + cardinality], space=space, algo=tpe.suggest, max_evals=100, trials=trials, rstate=hyperopt_rstate) 
+            
+            
             # Retrieve the best parameters
             best_params = space_eval(space, best)
             if algo in ['LR_reg', 'LR_no_reg']:
-                best_model = LogisticRegression(random_state=42, **best_params) # tree_method='hist', 
+                best_model = LogisticRegression(random_state=42, n_jobs=-1, **best_params) # tree_method='hist', 
             elif algo == 'SVM':
             	best_model = SVC(random_state=42, probability=True, **best_params)
             elif algo == 'RF':
@@ -136,19 +151,24 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
             # evaluate model on the hold out dataset
             y_pred = best_model.predict(X_test)
             # Get predicted probabilities
-            y_probas = best_model.predict_proba(X_test)[::, 1] 
+            if cardinality == 'binary':
+                y_probas = best_model.predict_proba(X_test)[::, 1] 
+            elif cardinality == 'multinomial':
+            	y_probas = best_model.predict_proba(X_test)
             outer_predictions['Fold predictions'].append((y_pred)); 
             outer_predictions['Fold probabilities'].append((y_probas))
             outer_predictions['Fold test'].append((y_test))
             
-        best_algo[algo] = results['auc']   
         # Summarize the estimated performance of the model over nested CV outer test sets
-        results = get_and_record_scores(outer_predictions, results)
+        results = get_and_record_scores(outer_predictions, cardinality)
+        best_algo[algo] = results['auc']
         if not os.path.exists(results_path):
             os.makedirs(results_path)
         save_results_dictionary(results, results_path + 'results_' + str(algo) + '_hyperopt.pkl')        
         print("Duration for {}: {}".format(str(algo), time.time() - start))
+    
     # Get max AUC and return best algo
+    best_algo = {k: v for k, v in best_algo.items() if v}
     max_auc_algo = max(best_algo, key=best_algo.get)
     print('Algo with highest AUC: {}'.format(max_auc_algo))
     return max_auc_algo
