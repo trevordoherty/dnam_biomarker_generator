@@ -8,7 +8,7 @@ Desc: The purpose of this script is to return the paramater search space for eac
 from hyperopt import hp
 import numpy as np
 
-def return_parameter_space(algo):
+def return_parameter_space(algo, cardinality):
     """Return parameter space for each algo."""
 
     space = dict()
@@ -16,8 +16,13 @@ def return_parameter_space(algo):
         space['solver'] = hp.choice('solver', ['lbfgs']) 
         space['penalty'] = hp.choice('penalty', ['none'])
         #space['C'] = hp.loguniform('C', np.log(0.00001), np.log(100))
-    elif algo == 'LR_reg':
+    elif (algo == 'LR_reg') & (cardinality == 'binary'):
         space['solver'] = hp.choice('solver', ['liblinear']) 
+        space['penalty'] = hp.choice('penalty', ['l1', 'l2']) 
+        space['C'] = hp.loguniform('C', np.log(0.00001), np.log(100))
+    elif (algo == 'LR_reg') & (cardinality == 'multinomial'):
+        space['solver'] = hp.choice('solver', ['saga']) 
+        #space['multi_class'] = hp.choice('multi_class', ['ovr']) 
         space['penalty'] = hp.choice('penalty', ['l1', 'l2']) 
         space['C'] = hp.loguniform('C', np.log(0.00001), np.log(100))
     elif algo == 'SVM':
