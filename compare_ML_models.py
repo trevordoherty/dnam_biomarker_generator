@@ -43,7 +43,7 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
     """
     
     def objective_lr(params):
-        model = LogisticRegression(random_state=42, max_iter=5000, **params) 
+        model = LogisticRegression(random_state=42, max_iter=100, **params) # max_iter=5000
         model.fit(X_train, y_train)
         y_probas = model.predict_proba(X_test)[:, 1]
         roc_auc = roc_auc_score(y_test, y_probas)
