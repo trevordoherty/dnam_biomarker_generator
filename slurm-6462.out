@@ -1,0 +1,9 @@
+Virtual environment detected.
+Traceback (most recent call last):
+  File "main.py", line 32, in <module>
+    main()
+  File "main.py", line 26, in main
+    best_algo = choose_ML_algorithm(input_data, args.Results_File_Path, algos)
+  File "/home/ICTDOMAIN/d18129068/dnam_biomarker_generator/src/dnam_biomarker_generator/compare_ML_models.py", line 127, in choose_ML_algorithm
+    best = fmin(fn=obj_fns[algo + '_' + cardinality], space=space, algo=tpe.suggest, max_evals=100, trials=trials, rstate=hyperopt_rstate) 
+KeyError: 'SVM_binary'
