@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#SBATCH --job-name=svm_biogen_short_covariates
+#SBATCH --job-name=lr_biogen_long_cov
 #SBATCH --gres=gpu:0
 #SBATCH --mem=50000
 #SBATCH --cpus-per-task=1
@@ -26,4 +26,4 @@ else:
     print("Not running in a virtual environment.")
 EOF
 
-python3 main.py "/home/ICTDOMAIN/d18129068/dnam_biomarker_generator/static/ibd_pypi_dnam_age_sex_bcc_short.pkl" "/home/ICTDOMAIN/d18129068/dnam_biomarker_generator/results/dnam_age_sex_bcc/short/" "SVM"
+python3 main.py "/home/ICTDOMAIN/d18129068/dnam_biomarker_generator/static/ibd_pypi_dnam_age_sex_bcc_long.pkl" "/home/ICTDOMAIN/d18129068/dnam_biomarker_generator/results/dnam_age_sex_bcc/long/" "LR_reg,LR_no_reg"

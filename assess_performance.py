@@ -19,7 +19,6 @@ def get_and_record_scores(outer_predictions, cardinality):
     all_pred = np.concatenate(outer_predictions['Fold predictions'])
     all_probas = np.concatenate(outer_predictions['Fold probabilities'])
     acc = accuracy_score(all_test, all_pred)
-
     if cardinality == 'binary':
         fpr, tpr, thresholds = roc_curve(all_test, all_probas)
         auc_score = auc(fpr, tpr)

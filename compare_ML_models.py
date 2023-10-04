@@ -43,11 +43,7 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
     """
     
     def objective_lr(params):
-<<<<<<< HEAD
-        model = LogisticRegression(random_state=42, max_iter=100, **params) # max_iter=5000
-=======
         model = LogisticRegression(random_state=42, max_iter=100, n_jobs=-1, **params) #, max_iter=5000
->>>>>>> 823582e252cfb2a1715304f09cbfcca64ca7f554
         model.fit(X_train, y_train)
         y_probas = model.predict_proba(X_test)[:, 1]
         roc_auc = roc_auc_score(y_test, y_probas)
@@ -129,8 +125,7 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
             space = return_parameter_space(algo, cardinality)
             trials = Trials()
             best = fmin(fn=obj_fns[algo + '_' + cardinality], space=space, algo=tpe.suggest, max_evals=100, trials=trials, rstate=hyperopt_rstate) 
-            
-            
+                        
             # Retrieve the best parameters
             best_params = space_eval(space, best)
             if algo in ['LR_reg', 'LR_no_reg']:
