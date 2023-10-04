@@ -3,3 +3,6 @@
 
 # Ignore cached files
 /__pycache__/
+
+# Ignore .sh files
+*.sh
