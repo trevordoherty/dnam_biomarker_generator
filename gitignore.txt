@@ -1,0 +1,5 @@
+# Ignore all .out slurm files
+*.out
+
+# Ignore cache files
+/__pycache__/
