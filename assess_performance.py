@@ -26,7 +26,6 @@ def get_and_record_scores(outer_predictions, cardinality):
         sens = cm[1][1] / (cm[1][1] + cm[1][0])
         spec = cm[0][0] / (cm[0][0] + cm[0][1])
         prec = cm[1][1] / (cm[1][1] + cm[0][1])
-        #print(f'Sens: {sens:.3f}, Spec: {spec:.3f}, Prec: {prec:.3f}, Acc: {acc:.3f}, AUC: {auc_score:.3f}')
         print('Sens: {}, Spec: {}, Prec: {}, Acc: {}, AUC: {}'.format(sens, spec, prec, acc, auc_score))
         results['auc'] = auc_score; results['sens']  = sens; results['spec'] = spec;
         results['prec'] = prec; results['acc'] = acc
@@ -49,9 +48,7 @@ def get_and_record_scores(outer_predictions, cardinality):
 def save_results_dictionary(outer_results, filepath):
     """Save dictionary of results """
     with open(filepath, 'wb') as f: pickle.dump(outer_results, f)
-    #with open(filepath, 'rb') as f:
-    #    loaded_dict = pickle.load(f)
-
+    
 
 def load_results_dictionary(filepath):
     """Load dictionary of results """
