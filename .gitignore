@@ -1,0 +1,8 @@
+# Ignore slurm.out files
+*.out
+
+# Ignore cached files
+pycache
+
+# Ignore .sh files
+*.sh
