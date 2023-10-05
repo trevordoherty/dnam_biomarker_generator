@@ -2,7 +2,7 @@
 *.out
 
 # Ignore cached files
-pycache
+__pycache__/
 
 # Ignore .sh files
 *.sh
