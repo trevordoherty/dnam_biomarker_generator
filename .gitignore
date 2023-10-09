@@ -4,6 +4,8 @@
 # Ignore .sh files
 *.sh
 
+# Preprocessing scripts
+read_geo_data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

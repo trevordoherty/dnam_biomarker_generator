@@ -19,6 +19,7 @@ def main():
 
     # Read in input data file which contains both the CpGs and "Label" columns
     input_data = read_data(args.Input_File_Path)
+
     
     # Simulate having 4 classes (Labels) to check multinomial capability of algos
     #input_data['Label'] = np.random.randint(0, 4, input_data.shape[0])
