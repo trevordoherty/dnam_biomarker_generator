@@ -130,21 +130,21 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
             # split data
             X_train, X_test = X.iloc[:, 0:200].iloc[train_ix, :], X.iloc[:, 0:200].iloc[test_ix, :]  # X.iloc[:, 0:500]
             y_train, y_test = y[train_ix], y[test_ix]
-            
+
             if algo == 'XGB':
                 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
-                
+
             if algo in ['LR_reg', 'LR_no_reg', 'SVM', 'NB']: # Not scaled for RF or XGB
                 # Scaling
                 sc = StandardScaler()
                 X_train = sc.fit_transform(X_train)
                 X_test = sc.transform(X_test)
-		    
+
             space = return_parameter_space(algo, cardinality)
             trials = Trials()
-            
+
             best = fmin(fn=obj_fns[algo + '_' + cardinality], space=space, algo=tpe.suggest, max_evals=100, trials=trials, rstate=hyperopt_rstate) 
-            
+
             # Retrieve the best parameters
             best_params = space_eval(space, best)
             if algo in ['LR_reg', 'LR_no_reg']:
@@ -158,12 +158,12 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
             elif algo == 'XGB':
                 best_model = XGBClassifier(random_state=42, **best_params)
             best_model.fit(X_train, y_train)
-            
+
             # evaluate model on the hold out dataset
             y_pred = best_model.predict(X_test)
             # Get predicted probabilities
             if cardinality == 'binary':
-                y_probas = best_model.predict_proba(X_test)[::, 1] 
+                y_probas = best_model.predict_proba(X_test)[::, 1]
             elif cardinality == 'multinomial':
             	y_probas = best_model.predict_proba(X_test)
             outer_predictions['Fold predictions'].append((y_pred)); 

@@ -4,6 +4,9 @@
 # Ignore .sh files
 *.sh
 
+# Ignore .save files
+*.save
+
 # Preprocessing scripts
 read_geo_data
 
