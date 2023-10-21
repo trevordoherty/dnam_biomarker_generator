@@ -173,8 +173,8 @@ def choose_ML_algorithm(input_data, results_path, ml_algo_list):
         # Summarize the estimated performance of the model over nested CV outer test sets
         results = get_and_record_scores(outer_predictions, cardinality)
         best_algo[algo] = results['auc']
-        if not os.path.exists(results_path):            os.makedirs(results_path)
-
+        if not os.path.exists(results_path):
+            os.makedirs(results_path)
         save_results_dictionary(results, results_path + 'results_' + str(algo) + '_hyperopt.pkl')        
         print("Duration for {}: {}".format(str(algo), time.time() - start))
     
