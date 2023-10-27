@@ -31,9 +31,9 @@ def main():
     #input_data['Label'] = np.random.randint(0, 4, input_data.shape[0])
     if reducer == False:
         if len(args.Input_File_Path) == 1: 
-            best_algo_nestedcv = assess_ML_algorithm_nested_cv(input_data, args.Results_File_Path, algos, reducer)
+            best_algo_nestedcv = assess_ML_algorithm_nested_cv(input_data, args.Results_File_Path, algos)
         elif len(args.Input_File_Path) > 1:
-            best_algo_nestedcv = assess_ML_algorithm_nested_cv(input_data, args.Results_File_Path, algos, reducer)
+            best_algo_nestedcv = assess_ML_algorithm_nested_cv(input_data, args.Results_File_Path, algos)
             best_algo_test = assess_ML_algorithm_indep_test(input_data, args.Results_File_Path, algos)
     elif reducer == True:
         if len(args.Input_File_Path) == 1: 

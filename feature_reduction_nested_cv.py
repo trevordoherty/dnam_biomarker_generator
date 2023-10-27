@@ -158,7 +158,7 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
                 #for train_ix, test_ix in cv_outer.split(X):
                 for fold_index, (train_ix, test_ix) in enumerate(cv_outer.split(X)):
                     # split data
-                    X_train, X_test = X.iloc[:, 0:500].iloc[train_ix, :], X.iloc[:, 0:500].iloc[test_ix, :]  # X.iloc[:, 0:500]
+                    X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]  # X.iloc[:, 0:500]
                     y_train, y_test = y[train_ix], y[test_ix]
                     X_train_inner, X_test_inner, y_train_inner, y_test_inner = \
                         train_test_split(X_train, y_train, test_size=0.2, random_state=42)
