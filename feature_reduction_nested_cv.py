@@ -136,7 +136,7 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
         y_indep = input_test['Label']; X_indep = input_test.drop(columns=['Label'])
     y = input_train['Label']; X = input_train.drop(columns=['Label'])
     # configure the cross-validation procedure
-    cv_outer = KFold(n_splits=2, shuffle=True, random_state=1)
+    cv_outer = KFold(n_splits=5, shuffle=True, random_state=1)
     
     methods = ["Variance", "MI", "ANOVA"] 
     subsets = list(range(100, 501, 100))
@@ -229,15 +229,3 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
             print("Duration for {}: {}".format(str(algo), time.time() - start))
             
             display_results_table_and_graph(results_dicts, algo, method)
-
-                
-        """
-        # Get max AUC and return best algo
-        best_algo = {k: v for k, v in best_algo.items() if v}
-        max_auc_algo = max(best_algo, key=best_algo.get)
-        results_df = pd.DataFrame(results_list)
-        col1 = results_df.pop('Algorithm'); results_df.insert(0, 'Algorithm', col1)
-        print("Results table for nested CV ...")
-        print(tabulate(results_df, headers='keys', tablefmt='psql'))
-        return max_auc_algo
-        """
