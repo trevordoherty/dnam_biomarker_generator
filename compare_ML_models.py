@@ -180,12 +180,15 @@ def assess_ML_algorithm_nested_cv(input_data, results_path, ml_algo_list):
             # Retrieve the best parameters
             best_params = space_eval(space, best)
             if algo in ['LR_reg', 'LR_no_reg']:
+                X_train, X_test = standardise(X_train, X_test)
                 best_model = LogisticRegression(random_state=42, n_jobs=-1, **best_params) # tree_method='hist', 
             elif algo == 'SVM':
-            	best_model = SVC(random_state=42, probability=True, **best_params)
+                X_train, X_test = standardise(X_train, X_test)
+                best_model = SVC(random_state=42, probability=True, **best_params)
             elif algo == 'RF':
             	best_model = RandomForestClassifier(random_state=42, **best_params) # tree_method='hist'
             elif algo == 'NB':
+                X_train, X_test = standardise(X_train, X_test)
                 best_model = GaussianNB(**best_params)
             elif algo == 'XGB':
                 best_model = XGBClassifier(random_state=42, **best_params)
@@ -207,7 +210,7 @@ def assess_ML_algorithm_nested_cv(input_data, results_path, ml_algo_list):
         best_algo[algo] = results['auc']
         if not os.path.exists(results_path):            
         	os.makedirs(results_path)
-        save_results_dictionary(results, results_path + 'results_' + str(algo) + '.pkl')        
+        save_results_dictionary(results, results_path + 'results2_' + str(algo) + '.pkl')        
         print("Duration for {}: {}".format(str(algo), time.time() - start))
         # Remove dictionary items not needed for results output table
         for k in ['All probas', 'All pred', 'All test']: results.pop(k, None)

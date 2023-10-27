@@ -7,6 +7,11 @@
 # Ignore .save files
 *.save
 
+# Ignore files that contain the words result or plot
+**/*results
+**/*plot
+
+
 # Preprocessing scripts
 read_geo_data
 

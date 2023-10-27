@@ -5,8 +5,9 @@ Desc: This script calculates metrics and performance scores.
       
 """
 
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from pdb import set_trace
 import pickle
 from sklearn.metrics import confusion_matrix, accuracy_score, auc, roc_curve, roc_auc_score
@@ -41,7 +42,7 @@ def get_and_record_scores(outer_predictions, cardinality):
             results['sens' + str(idx)] = sensitivity
         results['acc'] = acc; results['auc'] = auc_score
     results['All test'] = all_test; results['All pred'] = all_pred; results['All probas'] = all_probas
-    print('Results: {}'.format(results))
+    #print('Results: {}'.format(results))
     return results
 
 
@@ -90,3 +91,27 @@ def load_results_dictionary(filepath):
     return loaded_dict
 
 
+def display_results_table_and_graph(results_dicts, algo, method):
+    """Plot ranked feature results.
+
+    Tabulate main performance metrics.
+    """
+    results = []
+    results_dicts = load_results_dictionary("C:/Users/User/Desktop/D Drive/dnam_pypi/results/ibd/dnam_only/short/results_feature_ranking_" + str(algo) + "_" + str(method) + ".pkl")
+    for key1 in results_dicts.keys():
+    	for key2 in results_dicts[key1].keys():
+    		results.append((key1, key2, 
+    			            results_dicts[key1][key2]['auc'],
+    			            results_dicts[key1][key2]['sens'],
+    			            results_dicts[key1][key2]['spec'],
+    			            results_dicts[key1][key2]['acc'],
+    			            results_dicts[key1][key2]['prec']))
+    results_df = pd.DataFrame(results, columns=['Feature Reduction', 'Top Features',
+                                                'AUC', 'Sens', 'Spec', 'Acc', 'Prec'])
+    plt.plot(results_df['Top Features'], results_df['AUC'], label=method)
+    plt.xlabel("Ranked Features"); plt.ylabel("AUC")
+    plt.title("Ranked Features vs. AUC")
+    plt.legend() 
+    plt.savefig("C:/Users/User/Desktop/D Drive/dnam_pypi/results/ibd/dnam_only/short/feature_ranking_" + str(algo) + "_" + str(method) + "_plot.pdf")
+    
+            
