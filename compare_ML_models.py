@@ -204,18 +204,18 @@ def assess_ML_algorithm_nested_cv(input_data, results_path, ml_algo_list):
             outer_predictions['Fold predictions'].append((y_pred)); 
             outer_predictions['Fold probabilities'].append((y_probas))
             outer_predictions['Fold test'].append((y_test))
-            
+
         # Summarize the estimated performance of the model over nested CV outer test sets
         results = get_and_record_scores(outer_predictions, cardinality)
         best_algo[algo] = results['auc']
-        if not os.path.exists(results_path):            
+        if not os.path.exists(results_path):
         	os.makedirs(results_path)
-        save_results_dictionary(results, results_path + 'results2_' + str(algo) + '.pkl')        
+        save_results_dictionary(results, results_path + 'results2_' + str(algo) + '.pkl')
         print("Duration for {}: {}".format(str(algo), time.time() - start))
         # Remove dictionary items not needed for results output table
         for k in ['All probas', 'All pred', 'All test']: results.pop(k, None)
         results['Algorithm'] = algo; results_list.append(results)
-        
+
 
     # Get max AUC and return best algo
     best_algo = {k: v for k, v in best_algo.items() if v}
@@ -225,4 +225,4 @@ def assess_ML_algorithm_nested_cv(input_data, results_path, ml_algo_list):
     print("Results table for nested CV ...")
     print(tabulate(results_df, headers='keys', tablefmt='psql'))
     return max_auc_algo
-    
+
