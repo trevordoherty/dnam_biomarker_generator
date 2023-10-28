@@ -139,7 +139,7 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
     cv_outer = KFold(n_splits=5, shuffle=True, random_state=1)
     
     methods = ["Variance", "MI", "ANOVA"] 
-    subsets = list(range(100, 501, 100))
+    subsets = list(range(100, 10001, 100))
     for method in methods:        
         for algo in ml_algo_list:
             start = time.time()
@@ -228,4 +228,4 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
             save_results_dictionary(results_dicts, results_path + 'results_feature_ranking_' + str(algo) + '_' + str(method) + '.pkl')        
             print("Duration for {}: {}".format(str(algo), time.time() - start))
             
-            display_results_table_and_graph(results_dicts, algo, method)
+            display_results_table_and_graph(results_dicts, algo, method, results_path)

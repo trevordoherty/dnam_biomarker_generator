@@ -91,13 +91,13 @@ def load_results_dictionary(filepath):
     return loaded_dict
 
 
-def display_results_table_and_graph(results_dicts, algo, method):
+def display_results_table_and_graph(results_dicts, algo, method, results_path):
     """Plot ranked feature results.
 
     Tabulate main performance metrics.
     """
     results = []
-    results_dicts = load_results_dictionary("C:/Users/User/Desktop/D Drive/dnam_pypi/results/ibd/dnam_only/short/results_feature_ranking_" + str(algo) + "_" + str(method) + ".pkl")
+    results_dicts = load_results_dictionary(results_path + "results_feature_ranking_" + str(algo) + "_" + str(method) + ".pkl")
     for key1 in results_dicts.keys():
     	for key2 in results_dicts[key1].keys():
     		results.append((key1, key2, 
@@ -112,6 +112,6 @@ def display_results_table_and_graph(results_dicts, algo, method):
     plt.xlabel("Ranked Features"); plt.ylabel("AUC")
     plt.title("Ranked Features vs. AUC")
     plt.legend() 
-    plt.savefig("C:/Users/User/Desktop/D Drive/dnam_pypi/results/ibd/dnam_only/short/feature_ranking_" + str(algo) + "_" + str(method) + "_plot.pdf")
+    plt.savefig(results_path + "feature_ranking_" + str(algo) + "_" + str(method) + "_plot.pdf")
     
             
