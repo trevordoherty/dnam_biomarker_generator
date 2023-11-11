@@ -1,5 +1,5 @@
 
-
+'''
 import keras
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Input
@@ -69,3 +69,4 @@ def return_latent_spaces(X_train, X_test, y_train, y_test):
     return X_train, X_test  
 
 
+'''
