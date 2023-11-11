@@ -106,12 +106,18 @@ def display_results_table_and_graph(results_dicts, algo, method, results_path):
     			            results_dicts[key1][key2]['spec'],
     			            results_dicts[key1][key2]['acc'],
     			            results_dicts[key1][key2]['prec']))
+    
     results_df = pd.DataFrame(results, columns=['Feature Reduction', 'Top Features',
                                                 'AUC', 'Sens', 'Spec', 'Acc', 'Prec'])
-    plt.plot(results_df['Top Features'], results_df['AUC'], label=method)
+    if method == "PCA":
+        plt.plot(results_df['Top Features'], results_df['AUC'], label=method, marker='o', markersize=3, color="red")
+    else:
+    	plt.plot(results_df['Top Features'], results_df['AUC'], label=method)
+
     plt.xlabel("Ranked Features"); plt.ylabel("AUC")
     plt.title("Ranked Features vs. AUC")
     plt.legend() 
+
     plt.savefig(results_path + "feature_ranking_" + str(algo) + "_" + str(method) + "_plot.pdf")
     
             

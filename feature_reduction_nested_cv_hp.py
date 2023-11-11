@@ -62,7 +62,10 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
         model.fit(X_train_inner_sub, y_train_inner)
         if len(set(y_train)) == 2:
             y_probas = model.predict_proba(X_test_inner_sub)[:, 1]
-            roc_auc = roc_auc_score(y_test_inner, y_probas)
+            try:
+                roc_auc = roc_auc_score(y_test_inner, y_probas)
+            except:
+                set_trace()
         elif len(set(y_train)) > 2:
             y_probas = model.predict_proba(X_test_inner_sub)
             roc_auc = roc_auc_score(y_test_inner, y_probas, multi_class= 'ovr', average='micro')          
@@ -121,6 +124,9 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
         return -roc_auc
 
     
+    feat_max = 500
+
+
     best_algo = {'LR_no_reg': [], 'LR_reg': [], 'SVM': [], 'RF': [], 'XGB': [], 'NB': []}
     obj_fns = {'LR_reg_binary': objective_lr, 'LR_reg_multinomial': objective_lr, 'LR_no_reg_binary': objective_lr,
                'LR_no_reg_multinomial': objective_lr, 'SVM_binary': objective_svm, 'SVM_multinomial': objective_svm,
@@ -136,21 +142,26 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
         y_indep = input_test['Label']; X_indep = input_test.drop(columns=['Label'])
     y = input_train['Label']; X = input_train.drop(columns=['Label'])
     # configure the cross-validation procedure
-    cv_outer = KFold(n_splits=5, shuffle=True, random_state=1)
+    cv_outer = KFold(n_splits=2, shuffle=True, random_state=1)
     
-    methods = ["Variance", "MI", "ANOVA"] 
-    subsets = list(range(100, 10001, 100))
-    for method in methods:        
+    methods = ["AE", "PCA"] # ,  "Variance", "MI", "ANOVA", "Random Forest" "PCA", 
+    for method in methods:
+        reduced_features = get_reduced_features(cv_outer, X, y, method)        
+        if method in ["Random Forest", "Variance", "MI", "ANOVA"]:
+            subsets = list(range(100, feat_max + 1, 100))
+            outer_predictions = {method: {key: {} for key in range(100, feat_max + 1, 100)}}
+        elif method in ["PCA", "AE"]:
+            subsets = [reduced_features[0][2].shape[1]]
+            outer_predictions = {'PCA': {reduced_features[0][2].shape[1]: {}},
+                                 'AE': {reduced_features[0][2].shape[1]: {}}}
         for algo in ml_algo_list:
             start = time.time()
-            ranked_features = get_feature_rankings(cv_outer, X, y, algo, method)
-
             # Set label cardinality key
             if len(set(y)) == 2:
                 cardinality = 'binary'
             elif len(set(y)) > 2:
                 cardinality = 'multinomial'
-            outer_predictions = {method: {key: {} for key in range(100, 10000 + 1, 100)}}
+            
             for subset in subsets:
                 outer_predictions[method][subset]['Fold predictions'] = [];
                 outer_predictions[method][subset]['Fold probabilities'] = [];
@@ -158,22 +169,27 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
                 #for train_ix, test_ix in cv_outer.split(X):
                 for fold_index, (train_ix, test_ix) in enumerate(cv_outer.split(X)):
                     # split data
-                    X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]  # X.iloc[:, 0:500]
+                    X_train, X_test = X.iloc[:, 0:feat_max].iloc[train_ix, :], X.iloc[:, 0:feat_max].iloc[test_ix, :]  # X.iloc[:, 0:500]
                     y_train, y_test = y[train_ix], y[test_ix]
                     X_train_inner, X_test_inner, y_train_inner, y_test_inner = \
                         train_test_split(X_train, y_train, test_size=0.2, random_state=42)
                     
-                    # At this point, get the feature ranking on X_train_inner and X_train
-                    sub_inner = ranked_features[fold_index][1].index[0:subset]
-                    sub = ranked_features[fold_index][2].index[0:subset]
+                    if method in ["Random Forest", "Variance", "MI", "ANOVA"]:
+                        # At this point, get the feature ranking on X_train_inner and X_train
+                        sub_inner = reduced_features[fold_index][1].index[0:subset]
+                        sub = reduced_features[fold_index][2].index[0:subset]
                     
-                    X_train_inner_sub = X_train_inner.loc[:, sub_inner]; 
-                    X_test_inner_sub = X_test_inner.loc[:, sub_inner]; 
+                        X_train_inner_sub = X_train_inner.loc[:, sub_inner]; 
+                        X_test_inner_sub = X_test_inner.loc[:, sub_inner]; 
                     
-                    # At this point we can standardise 
-                    if algo in ['LR_reg', 'LR_no_reg', 'SVM', 'NB']:
-                        X_train_inner_sub, X_test_inner_sub = standardise(X_train_inner_sub, X_test_inner_sub)
-                    
+                        # At this point we can standardise 
+                        if algo in ['LR_reg', 'LR_no_reg', 'SVM', 'NB']:
+                            X_train_inner_sub, X_test_inner_sub = standardise(X_train_inner_sub, X_test_inner_sub)
+                    elif method in ['AE', 'PCA']:
+                        #reduced_features = get_reduced_features(cv_outer, X, y, method)
+                        X_train_inner_sub = reduced_features[fold_index][1]; X_test_inner_sub = reduced_features[fold_index][2]
+                        X_train = reduced_features[fold_index][3]; X_test = reduced_features[fold_index][4]
+
                     space = return_parameter_space(algo, cardinality)
                     trials = Trials()
                     
@@ -185,19 +201,24 @@ def assess_feature_selection_nested_cv(input_data, results_path, ml_algo_list):
                     # Retrieve the best parameters
                     best_params = space_eval(space, best)
                     if algo in ['LR_reg', 'LR_no_reg']:
-                        X_train, X_test = standardise(X_train.loc[:, sub], X_test.loc[:, sub])
+                        if method not in ["AE", "PCA"]:
+                            X_train, X_test = standardise(X_train.loc[:, sub], X_test.loc[:, sub])
                         best_model = LogisticRegression(random_state=42, n_jobs=-1, **best_params) # tree_method='hist', 
                     elif algo == 'SVM':
-                        X_train, X_test = standardise(X_train.loc[:, sub], X_test.loc[:, sub])
+                        if method not in ["AE", "PCA"]:
+                            X_train, X_test = standardise(X_train.loc[:, sub], X_test.loc[:, sub])
                         best_model = SVC(random_state=42, probability=True, **best_params)
                     elif algo == 'RF':
-                        X_train, X_test = np.array(X_train.loc[:, sub]), np.array(X_test.loc[:, sub])
+                        if method not in ["AE", "PCA"]:
+                            X_train, X_test = np.array(X_train.loc[:, sub]), np.array(X_test.loc[:, sub])
                         best_model = RandomForestClassifier(random_state=42, **best_params) # tree_method='hist'
                     elif algo == 'NB':
-                        X_train, X_test = standardise(X_train.loc[:, sub], X_test.loc[:, sub])
+                        if method not in ["AE", "PCA"]:
+                            X_train, X_test = standardise(X_train.loc[:, sub], X_test.loc[:, sub])
                         best_model = GaussianNB(**best_params)
                     elif algo == 'XGB':
-                        X_train, X_test = np.array(X_train.loc[:, sub]), np.array(X_test.loc[:, sub])
+                        if method not in ["AE", "PCA"]:
+                            X_train, X_test = np.array(X_train.loc[:, sub]), np.array(X_test.loc[:, sub])
                         best_model = XGBClassifier(random_state=42, **best_params)
                              
                     best_model.fit(X_train, y_train)

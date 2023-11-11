@@ -17,7 +17,8 @@ Desc: This script contains functionality that compares multiple ML models.
 
 from assess_performance import *
 from get_parameter_space import *
-from compare_ML_models import *
+from compare_ML_models_hp import *
+from compare_ML_models_rs import *
 import hyperopt
 from hyperopt import fmin, rand, tpe, hp, Trials, space_eval
 import os
