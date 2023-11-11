@@ -222,6 +222,7 @@ def assess_ML_algorithm_nested_cv_hyperopt(input_data, inputs_path, results_path
     max_auc_algo = max(best_algo, key=best_algo.get)
     results_df = pd.DataFrame(results_list)
     results_df['Input'] = inputs_path[0][inputs_path[0].rfind("/") + 1:inputs_path[0].find(".", inputs_path[0].rfind("/"))]
+    results_df['Tuning'] = 'Hyperopt'
     col1 = results_df.pop('Algorithm'); results_df.insert(0, 'Algorithm', col1)
     print("Results table for nested CV ...")
     print(tabulate(results_df, headers='keys', tablefmt='psql'))
